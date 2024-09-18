@@ -27,26 +27,9 @@ class Message(models.Model):
     
     def __str__(self) -> str:
         return f'{self.topic_mail}'
-    
-class Attempt(models.Model):
-    STATUS_ATTEMPT = [
-        ('pos', 'Успешно'),
-        ('neg', 'Не успешно'),
-    ]
 
-    last_date = models.DateTimeField(verbose_name='Дата и время последней попытки рассылки')
-    status = models.CharField(verbose_name='статус рассылки', choices=STATUS_ATTEMPT, default='pos')
-    answer = models.CharField(verbose_name='Ответ почтового сервера', blank=True, null=True)
 
-    class Meta:
-        verbose_name = 'Попытки рассылки'
-        verbose_name_plural = 'Попытки расылки'
-
-    def __str__(self) -> str:
-        return f'{self.last_date} - {self.status}'
-    
-
-class mailing(models.Model):
+class Mailing(models.Model):
     '''
     Настройка рассылки
     '''
@@ -69,8 +52,6 @@ class mailing(models.Model):
 
     client = models.ManyToManyField(Client, verbose_name='Клиенты для которых рассылка')
 
-    attempt = models.ForeignKey(Attempt, on_delete=models.CASCADE, verbose_name='Информация о попытке рассылки')
-
     message = models.OneToOneField(Message, on_delete=models.CASCADE, verbose_name='Сообщение для рассылки')
 
     class Meta:
@@ -78,4 +59,25 @@ class mailing(models.Model):
         verbose_name_plural = 'Настройки рассылки'
 
     def __str__(self) -> str:
-        return f'{self.status} - {self.periodic}'
+        return f'{self.pk}'
+
+
+class Attempt(models.Model):
+    STATUS_ATTEMPT = [
+        ('pos', 'Успешно'),
+        ('neg', 'Не успешно'),
+    ]
+
+    last_date = models.DateTimeField(verbose_name='Дата и время последней попытки рассылки')
+    status = models.CharField(max_length=150, verbose_name='статус рассылки')
+    answer = models.CharField(verbose_name='Ответ почтового сервера', blank=True, null=True)
+
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name='попытка рассылки',
+                                blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Попытки рассылки'
+        verbose_name_plural = 'Попытки расылки'
+
+    def __str__(self) -> str:
+        return f'{self.last_date} - {self.status}'

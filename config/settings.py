@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     'email_sender',
+
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -129,3 +131,22 @@ STATICFILES_DIRS = (BASE_DIR / 'static',)
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'chto-ya-tut-delayu@yandex.ru'
+EMAIL_HOST_PASSWORD = 'rfnheblokcxuoefz'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+#minute hour day month day_of_week
+CRONJOBS = [
+    ('* */24 * * *', 'email_sender.cron.send_func', ['day']),
+    ('* * */7 * *', 'email_sender.cron.send_func', ['week']),
+    ('* * * */1 *', 'email_sender.cron.send_func', ['month']),
+]

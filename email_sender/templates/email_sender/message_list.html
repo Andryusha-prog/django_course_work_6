@@ -1,0 +1,29 @@
+{% extends '../base.html' %}
+{% block content %}
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+
+        <div class="row">
+            <a class="btn btn-primary" href="{% url 'sender:message_create' %}" role="button">Добаивть Сообщение</a>
+        </div>
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          {% for message in object_list %}
+        <div class="col">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <p class="card-text">{{message.topic_mail}}</p>
+              <p class="card-text">{{message.bode_mail}}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <a class="btn btn-primary" href="{% url 'sender:message_detail' message.pk %}" role="button">Подробно</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -164,7 +164,7 @@
 
 
 <header data-bs-theme="dark">
-
+  {% include 'include/top_menu.html' %}
 </header>
 
 <main>
@@ -172,13 +172,13 @@
   <section class="py-5 text-center container">
     <div class="row py-lg-5">
       <div class="col-lg-6 col-md-8 mx-auto">
-        <h1 class="fw-light">Магазин</h1>
-        <p class="lead text-body-secondary">Какое-то Описание магазина.</p>
-        <a class="btn btn-primary" href="#" role="button">Добаивть продукт</a>
+        <h1 class="fw-light">Рассылка сообщений</h1>
+        <p class="lead text-body-secondary">Рассылка сообщений клиентам</p>
       </div>
     </div>
   </section>
-
+  {% block content %}
+  {% endblock %}
 </main>
 
 <footer class="text-body-secondary py-5">
