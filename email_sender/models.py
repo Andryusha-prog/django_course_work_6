@@ -1,5 +1,8 @@
 from django.db import models
 
+from users.models import User
+
+
 # Create your models here.
 class Client(models.Model):
     '''
@@ -9,7 +12,7 @@ class Client(models.Model):
     name = models.CharField(max_length=150, verbose_name='Ф.И.О.')
     comment = models.TextField(verbose_name='комментарий', blank=True, null=True)
 
-    class Meta():
+    class Meta:
         verbose_name = 'Клиент'
         verbose_name_plural = 'Клиенты'
 
@@ -53,6 +56,8 @@ class Mailing(models.Model):
     client = models.ManyToManyField(Client, verbose_name='Клиенты для которых рассылка')
 
     message = models.OneToOneField(Message, on_delete=models.CASCADE, verbose_name='Сообщение для рассылки')
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Пользователь-Владелец')
 
     class Meta:
         verbose_name = 'Настройка рассылки'

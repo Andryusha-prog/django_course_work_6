@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'email_sender',
 
     'django_crontab',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -146,7 +147,12 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 #minute hour day month day_of_week
 CRONJOBS = [
-    ('* */24 * * *', 'email_sender.cron.send_func', ['day']),
-    ('* * */7 * *', 'email_sender.cron.send_func', ['week']),
-    ('* * * */1 *', 'email_sender.cron.send_func', ['month']),
+    ('0 0 */1 * *', 'email_sender.cron.send_func', ['day']),
+    ('0 0 */7 * *', 'email_sender.cron.send_func', ['week']),
+    ('0 0 1 */1 *', 'email_sender.cron.send_func', ['month']),
 ]
+
+AUTH_USER_MODEL = 'users.User'
+
+LOGIN_REDIRECT_URL = 'sender:mailing_list'
+LOGOUT_REDIRECT_URL = 'sender:mailing_list'

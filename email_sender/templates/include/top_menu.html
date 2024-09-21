@@ -12,6 +12,12 @@
             <li><a href="{% url 'sender:message_list' %}" class="text-white">Список сообщений</a></li>
             <li><a href="{% url 'sender:mailing_list' %}" class="text-white">Список рассылок</a></li>
             <li><a href="{% url 'sender:attempt_list' %}" class="text-white">Список попыток</a></li>
+            {% if user.is_authenticated %}
+              <li><a href="{% url 'users:logout' %}" class="text-white">Выход</a></li>
+            {% else %}
+              <li><a href="{% url 'users:login' %}" class="text-white">Вход</a></li>
+              <li><a href="{% url 'users:register' %}" class="text-white">Регистрация</a></li>
+            {% endif %}
           </ul>
         </div>
       </div>
