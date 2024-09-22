@@ -4,7 +4,7 @@ from django.conf.global_settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 
 from users.forms import UserRegisterView
 from users.models import User
@@ -38,3 +38,7 @@ def email_verification(request, token):
     user.is_active = True
     user.save()
     return redirect(reverse('users:login'))
+
+
+class UserListView(ListView):
+    model = User

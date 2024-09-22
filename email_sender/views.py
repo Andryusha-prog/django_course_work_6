@@ -1,6 +1,7 @@
 from lib2to3.fixes.fix_input import context
 from urllib import request
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.forms import BaseModelForm, inlineformset_factory
 from django.http import HttpResponse
@@ -10,7 +11,7 @@ from django.views.generic import CreateView, UpdateView, ListView, DetailView, D
 
 from email_sender.cron import send_func
 from email_sender.forms import ClientFormCreate, ClientFormUpdate, MailingFormCreate, MailingFormUpdate, \
-    MessageFormCreate, MessageFormUpdate, AttemptForm
+    MessageFormCreate, MessageFormUpdate, AttemptForm, ManagerMailingDetailForm
 from email_sender.models import Client, Mailing, Message, Attempt
 from email_sender.services import send_send
 
@@ -24,6 +25,8 @@ class ClientCreateView(CreateView):
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         client = form.save()
+        user = self.request.user
+        client.user = user
         client.save()
         return super().form_valid(form)
     
@@ -39,7 +42,7 @@ class ClientListView(ListView):
     model = Client
 
 
-class ClientDetailView(DetailView):
+class ClientDetailView(LoginRequiredMixin, DetailView):
     model = Client
 
 
@@ -55,6 +58,8 @@ class MessageCreateView(CreateView):
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         message = form.save()
+        user = self.request.user
+        message.user = user
         message.save()
         return super().form_valid(form)
 
@@ -62,7 +67,7 @@ class MessageListView(ListView):
     model = Message
 
 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin, DetailView):
     model = Message
 
 
@@ -86,6 +91,8 @@ class MailingCreateView(CreateView):
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         mailing = form.save()
+        user = self.request.user
+        mailing.user = user
         mailing.save()
         send_func('go_mail', mailing_pk=mailing.pk, message_pk=mailing.message.pk)
         return super().form_valid(form)
@@ -95,7 +102,7 @@ class MailingListView(ListView):
     model = Mailing
 
 
-class MailingDetailView(DetailView):
+class MailingDetailView(LoginRequiredMixin, DetailView):
     model = Mailing
 
     def get_context_data(self, **kwargs):
@@ -107,6 +114,7 @@ class MailingDetailView(DetailView):
             context_data['formset'] = MailingFormset(instance=self.object)
         return context_data
 
+
 class MailingUpdateView(UpdateView):
     model = Mailing
     form_class = MailingFormUpdate
@@ -114,6 +122,16 @@ class MailingUpdateView(UpdateView):
     
     def get_success_url(self):
         return reverse_lazy('sender:mailing_detail', kwargs={'pk': self.object.pk})
+
+
+    def get_form_class(self):
+        user = self.request.user
+        if user == self.object.user:
+            return MailingFormUpdate
+        if user.has_perm('email_sender.cant_edit_mailing'):
+            return ManagerMailingDetailForm
+
+
 
 class MailingDeleteView(DeleteView):
     model = Mailing
