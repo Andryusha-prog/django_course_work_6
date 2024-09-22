@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <form class="row" enctype="multipart/form-data">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <p>Общее количество рассылок: {{mailing_count}}</p>
+                    <p>Общее число клиентов сервиса: {{client_count}}</p>
+                    <p>Количество активных рассылок: {{mailing_active_count}}</p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container">
+    <form class="row" enctype="multipart/form-data">
+        {% for article in article_rand_list %}
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <p>Заголовок: {{article.heading}}</p>
+                    <p>Контент: {{article.content}}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a class="btn btn-primary" href="{% url 'blog:blog_detail' article.pk %}" role="button">Подробно</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </form>
+</div>
+{% endblock %}
