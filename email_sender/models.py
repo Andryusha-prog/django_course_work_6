@@ -1,5 +1,8 @@
 from django.db import models
 
+from users.models import User
+
+
 # Create your models here.
 class Client(models.Model):
     '''
@@ -9,7 +12,10 @@ class Client(models.Model):
     name = models.CharField(max_length=150, verbose_name='Ф.И.О.')
     comment = models.TextField(verbose_name='комментарий', blank=True, null=True)
 
-    class Meta():
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,
+                             verbose_name='Пользователь-Владелец')
+
+    class Meta:
         verbose_name = 'Клиент'
         verbose_name_plural = 'Клиенты'
 
@@ -20,6 +26,9 @@ class Client(models.Model):
 class Message(models.Model):
     topic_mail = models.CharField(max_length=150, verbose_name='Тема письма')
     bode_mail = models.TextField(verbose_name='Тело письма')
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,
+                             verbose_name='Пользователь-Владелец')
 
     class Meta:
         verbose_name = 'Сообщение'
@@ -54,9 +63,19 @@ class Mailing(models.Model):
 
     message = models.OneToOneField(Message, on_delete=models.CASCADE, verbose_name='Сообщение для рассылки')
 
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Пользователь-Владелец')
+
     class Meta:
         verbose_name = 'Настройка рассылки'
         verbose_name_plural = 'Настройки рассылки'
+        permissions = [
+            ('can_off_mailing', 'can off mailing'),
+            ('cant_edit_mailing', 'can edit mailing'),
+            ('cant_change_list_mailing', 'cant change list mailing'),
+            ('cant_edit_mailing_message', 'cant edit mailing message'),
+            ('can_view_mailing', 'can view mailing'),
+            ('can_view_user_list', 'can view user list'),
+        ]
 
     def __str__(self) -> str:
         return f'{self.pk}'
